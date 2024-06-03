@@ -6,5 +6,5 @@ langchain_community
 flask
 pypdf
 pymupdf
-
+python-dotenv
 -e .
