@@ -1,8 +1,7 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, request
 from src.helper import download_hugging_face_embeddings
 from langchain_community.vectorstores import Pinecone
 import pinecone
-from langchain.prompts import PromptTemplate
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain_community.llms import CTransformers
@@ -20,8 +19,6 @@ embeddings =  download_hugging_face_embeddings(model)
 app = Flask(__name__)
 
 docsearch = Pinecone.from_existing_index(index_name, embeddings)
-# query = 'What is biology?'
-# docs = docsearch.similarity_search(query, k=3)
 
 promt = PromptTemplate(template=prompt_template, input_variables=['context', 'question'])
 chain_type_kwargs = {"prompt": promt}
@@ -46,18 +43,20 @@ qa = RetrievalQA.from_chain_type(
 
 @app.route("/")
 def index():
-    return render_template("chat.html")
+    return render_template('chat.html')
 
-@app.route("/get", methods=['GET', 'POST'])
+
+
+@app.route("/get", methods=["GET", "POST"])
 def chat():
-    msg = request.form['msg']
+    msg = request.form["msg"]
     input = msg
     print(input)
-    result = qa({"query": input})
-    print("Response: ,", result['result'])
-    return str(result['result'])
+    result=qa({"query": input})
+    print("Response : ", result["result"])
+    return str(result["result"])
+
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    #  app.run(host='', port=3000, debug=True)
+    app.run(host="0.0.0.0", port= 8080, debug= True)
